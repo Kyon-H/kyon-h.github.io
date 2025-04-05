@@ -1,0 +1,40 @@
+name: Sync File from blog-bak
+
+on:
+  # 方式2：当仓库A有新的提交时触发（需要仓库A和B在同一GitHub账户下）
+  repository_dispatch:
+    types: [blog-bak-updated]
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  sync-file:
+    runs-on: ubuntu-22.04
+    steps:
+      # 步骤1：检出仓库B的代码
+      - name: Checkout kyon-h.github.io
+        uses: actions/checkout@v4
+        with:
+          repository: kyon-h/kyon-h.github.io  # 仓库B的全名
+          ref: master  # 仓库B的目标分支
+
+      # 步骤2：拉取仓库A的指定文件
+      - name: Fetch File from blog-bak
+        run: |
+          # 克隆仓库A（如果仓库A是私有，需在URL中包含PAT）
+          git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Kyon-H/blog-bak.git blog-bak
+          mkdir -p _posts  # 创建仓库B的指定目录
+          cp -r blog-bak/* _posts/  # 复制文件到仓库B的指定目录
+
+      # 步骤3：提交并推送到仓库B
+      - name: Commit and Push to kyon-h.github.io
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          # 检查文件是否有变化
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-sync" && git push origin master --force)
