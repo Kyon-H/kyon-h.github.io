@@ -20,6 +20,7 @@ jobs:
         with:
           repository: Kyon-H/kyon-h.github.io  # 仓库B的全名
           ref: master  # 仓库B的目标分支
+          token: ${{ secrets.ACCESS_TOKEN }}  # 仓库B的访问令牌（私有仓库需要）
 
       # 步骤2：拉取仓库A的指定文件
       - name: Fetch File from blog-bak
