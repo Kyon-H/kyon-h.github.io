@@ -18,7 +18,7 @@ jobs:
       - name: Checkout kyon-h.github.io
         uses: actions/checkout@v4
         with:
-          repository: kyon-h/kyon-h.github.io  # 仓库B的全名
+          repository: Kyon-H/kyon-h.github.io  # 仓库B的全名
           ref: master  # 仓库B的目标分支
 
       # 步骤2：拉取仓库A的指定文件
