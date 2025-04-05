@@ -25,7 +25,8 @@ jobs:
       - name: Fetch File from blog-bak
         run: |
           # 克隆仓库A（如果仓库A是私有，需在URL中包含PAT）
-          git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Kyon-H/blog-bak.git blog-bak
+          # git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Kyon-H/blog-bak.git blog-bak
+          git clone https://github.com/Kyon-H/blog-bak.git blog-bak
           mkdir -p _posts  # 创建仓库B的指定目录
           cp -r blog-bak/* _posts/  # 复制文件到仓库B的指定目录
 
