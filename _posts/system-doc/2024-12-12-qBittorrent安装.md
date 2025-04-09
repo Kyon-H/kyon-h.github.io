@@ -251,7 +251,7 @@ REGEX_GMTEAM = re.compile(r'^(\[GM-Team\])\[.+?\]\[(.+?)\].*\[(\d\d)\](.*)')
 # [Nekomoe kissaten][Monogatari Series - Off & Monster Season][06][1080p][JPSC]
 # [Nekomoe kissaten] Monogatari Series - Off & Monster Season [06][1080p][JPSC]
 # (\d\d.+?)匹配 01、01v2、01.5、01(OAD) 等情况
-REGEX_COMMON = re.compile(r'^(\[.+?\]\s*)\[?(.+?)\]?\s*\[(\d\d.+?)\](.*)$')
+REGEX_COMMON = re.compile(r'^(\[.+?\]\s*)\[?(.+?)\]?\s*\[(\d\d.*?)\](.*)$')
 ```
 
 ```python
@@ -263,7 +263,7 @@ def GMTeam(name) -> str:
     # [GM-Team字幕组],对目录或文件名进行处理
     rslt = REGEX_GMTEAM.match(name)
     if rslt:
-	    name = f'{rslt.group(1)}{rslt.group(2)} - {rslt.group(3)}{rslt.group(4)}'
+	    name = f'{rslt.group(1)}{rslt.group(2)} - {rslt.group(3)} {rslt.group(4)}'
     return name
 
 def common(name) -> str:
@@ -271,7 +271,7 @@ def common(name) -> str:
     # @param name: 单级目录名或单级文件名
     rslt = REGEX_COMMON.match(name)
     if rslt:
-        name = f'{rslt.group(1)}{rslt.group(2)} - {rslt.group(3)}{rslt.group(4)}'
+        name = f'{rslt.group(1)}{rslt.group(2)} - {rslt.group(3)} {rslt.group(4)}'
     return name
 ```
 
