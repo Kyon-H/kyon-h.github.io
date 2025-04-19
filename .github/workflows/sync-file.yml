@@ -18,17 +18,18 @@ jobs:
       - name: Checkout kyon-h.github.io
         uses: actions/checkout@v4
         with:
-          repository: Kyon-H/kyon-h.github.io  # 仓库B的全名
-          ref: master  # 仓库B的目标分支
-          token: ${{ secrets.ACCESS_TOKEN }}  # 仓库B的访问令牌（私有仓库需要）
+          repository: Kyon-H/kyon-h.github.io # 仓库B的全名
+          ref: master # 仓库B的目标分支
+          token: ${{ secrets.ACCESS_TOKEN }} # 仓库B的访问令牌（私有仓库需要）
 
       # 步骤2：拉取仓库A的指定文件
       - name: Fetch File from blog-bak
         run: |
           # 克隆仓库A（如果仓库A是私有，需在URL中包含PAT）
           git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Kyon-H/blog-bak.git blog-bak
-          mkdir -p _posts  # 创建仓库B的指定目录
-          cp -r blog-bak/* _posts/  # 复制文件到仓库B的指定目录
+          mkdir -p _posts
+          rm -rf _posts/*
+          find blog-bak -type f -name "*.md" -exec cp {} _posts/ \;
 
       # 步骤3：提交并推送到仓库B
       - name: Commit and Push to kyon-h.github.io
