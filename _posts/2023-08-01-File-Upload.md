@@ -1,15 +1,14 @@
 ---
 layout: post
-title: 2023-08-01-File-Upload
-subtitle: 2023-08-01-File-Upload
+title: File Upload
+subtitle: File Upload
 date: 2023-08-01 23:00
 author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags:
   - DVWA
 categories: 
-permalink: 
-excerpt: 文件上传漏洞 LOW MEDIUM HIGH
+excerpt: "文件上传漏洞 LOW MEDIUM HIGH"
 published: true
 ---
 # 文件上传漏洞
