@@ -250,7 +250,7 @@ REGEX_GMTEAM = re.compile(r'^(\[GM-Team\])\[.+?\]\[(.+?)\].*\[(\d\d)\](.*)')
 # 匹配一般格式
 # [Nekomoe kissaten][Monogatari Series - Off & Monster Season][06][1080p][JPSC]
 # [Nekomoe kissaten] Monogatari Series - Off & Monster Season [06][1080p][JPSC]
-# (\d\d.+?)匹配 01、01v2、01.5、01(OAD) 等情况
+# (\d\d.*?)匹配 01、01v2、01.5、01(OAD) 等情况
 REGEX_COMMON = re.compile(r'^(\[.+?\]\s*)\[?(.+?)\]?\s*\[(\d\d.*?)\](.*)$')
 ```
 
