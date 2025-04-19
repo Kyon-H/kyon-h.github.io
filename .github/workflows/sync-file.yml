@@ -30,6 +30,7 @@ jobs:
           mkdir -p _posts
           rm -rf _posts/*
           find blog-bak -type f -name "*.md" -exec cp {} _posts/ \;
+          rm -rf blog-bak
 
       # 步骤3：提交并推送到仓库B
       - name: Commit and Push to kyon-h.github.io
