@@ -7,8 +7,8 @@ author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags:
   - DVWA
+  - 靶场实战
 published: true
-category: 靶场实战
 ---
 # 文件上传漏洞
 ### LOW
