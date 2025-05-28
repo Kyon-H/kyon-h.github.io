@@ -11,6 +11,7 @@ tags:
   - Ubuntu
   - 软件安装
 ---
+
 ## 1. 下载安装
 
 <mark>配置文件：~/.config/qBittorrent/</mark>
@@ -37,17 +38,19 @@ vim qbittorrent-enhanced-nox.service
 ```
 
 ## 2. 配置
+
 #### BitTorrent
 
- trackers list:  `https://trackerslist.com/all.txt`
+trackers list: `https://trackerslist.com/all.txt`
+
 #### Web UI
 
 设置`0.0.0.0`访问
 
-第三方UI：
+第三方 UI：
 [VueTorrent/VueTorrent: The sleekest looking WEBUI for qBittorrent made with Vuejs! (github.com)](https://github.com/VueTorrent/VueTorrent)
 
-下载vuetorrent
+下载 vuetorrent
 
 ```shell
 #解压
@@ -83,33 +86,31 @@ WebUI\RootFolder=
 #最后刷新或重启
 ```
 
-qbittorrent设置备用webui地址：`/home/user/Templates/vuetorrent/`
+qbittorrent 设置备用 webui 地址：`/home/user/Templates/vuetorrent/`
 
 #### 高级
 
-1.
-<img src="https://kyonk.v6.army:1443/GFdTet.png" alt="image-20240820230738951.png" title="image-20240820230738951.png" style="zoom:50%" />
-
+1. <img src="https://img.ghostliner.top/GFdTet.png" alt="image-20240820230738951.png" title="image-20240820230738951.png" style="zoom:50%" />
 
 2.
 
-<img src="https://kyonk.v6.army:1443/iNYa7t.png" alt="image-20240820230937953.png" title="image-20240820230937953.png" style="zoom:50%" />
+<img src="https://img.ghostliner.top/iNYa7t.png" alt="image-20240820230937953.png" title="image-20240820230937953.png" style="zoom:50%" />
 
 3.
 
-<img src="https://kyonk.v6.army:1443/tvYzB5.png" alt="image-20240820231006390.png" title="image-20240820231006390.png" style="zoom:50%" />
+<img src="https://img.ghostliner.top/tvYzB5.png" alt="image-20240820231006390.png" title="image-20240820231006390.png" style="zoom:50%" />
 
 4.
 
-<img src="https://kyonk.v6.army:1443/0gEBAj.png" alt="image-20240820231030176.png" title="image-20240820231030176.png" style="zoom:50%" />
+<img src="https://img.ghostliner.top/0gEBAj.png" alt="image-20240820231030176.png" title="image-20240820231030176.png" style="zoom:50%" />
 
 5.
 
-<img src="https://kyonk.v6.army:1443/jgfnou.png" alt="image-20240820231044716.png" title="image-20240820231044716.png" style="zoom:50%" />
+<img src="https://img.ghostliner.top/jgfnou.png" alt="image-20240820231044716.png" title="image-20240820231044716.png" style="zoom:50%" />
 
 ## 3. PeerBanHelper
 
-防止PCDN
+防止 PCDN
 
 [Linux 手动部署 · PBH-BTN/PeerBanHelper Wiki (github.com)](https://github.com/PBH-BTN/PeerBanHelper/wiki/Linux-手动部署)
 
@@ -121,7 +122,7 @@ sudo apt-get install openjdk-21-jdk-headless -y
 java -version
 ```
 
-下载jar包，使用命令来启动 PBH：
+下载 jar 包，使用命令来启动 PBH：
 
 ```shell
 java -jar -Xmx256M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+ShrinkHeapInSteps -jar PeerBanHelper.jar
@@ -133,7 +134,7 @@ _通常情况下，PBH 会自动探测桌面环境，并在支持的情况下启
 java -jar -Xmx256M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+ShrinkHeapInSteps -jar PeerBanHelper.jar nogui
 ```
 
-PBH默认端口：9898
+PBH 默认端口：9898
 
 设置开机自启
 
@@ -155,9 +156,10 @@ WantedBy=multi-user.target
 ```
 
 ## 4.自动化
+
 #### 4.1 自动下载
 
-**RSS订阅：**
+**RSS 订阅：**
 
 ```
 # 音乐
@@ -170,36 +172,38 @@ https://ouo.si/feed?c=_&q=baha
 
 **下载规则：**
 
-| 名称  | FLAC                                                                              |
-| --- | ---------------------------------------------------------------------------- |
-| 正则  | True                                                                              |
-| 包含  | `.*2025.*TVアニメ.*flac`                                                             |
+| 名称   | FLAC                                                                          |
+| ------ | ----------------------------------------------------------------------------- |
+| 正则   | True                                                                          |
+| 包含   | `.*2025.*TVアニメ.*flac`                                                      |
 | 不包含 | `Hi-Res\|mkv\|mp4\|ost\|オリジナル\|サウンドトラック\|original.*sound.*track` |
 
-| 名称  | MP3                                                                                                          |
-| --- | ---------------------------------------------------------------------------- |
-| 正则  | True                                                                                                         |
-| 包含  | `.*\[\d{6}\]TVアニメ.*(mp3\|320)`                                                                               |
+| 名称   | MP3                                                                           |
+| ------ | ----------------------------------------------------------------------------- |
+| 正则   | True                                                                          |
+| 包含   | `.*\[\d{6}\]TVアニメ.*(mp3\|320)`                                             |
 | 不包含 | `Hi-Res\|mkv\|mp4\|ost\|オリジナル\|サウンドトラック\|original.*sound.*track` |
 
 #### 4.2 邮件通知
 
-| 选项     | 值            |
+| 选项   | 值           |
 | ------ | ------------ |
-| 发件人    | xxx@126.com  |
-| 收件人    | zzz@qq.com   |
-| 服务器    | smtp.126.com |
-| 用户名    | xxx@126.com  |
-| 密    码 | TOKEN        |
+| 发件人 | xxx@126.com  |
+| 收件人 | zzz@qq.com   |
+| 服务器 | smtp.126.com |
+| 用户名 | xxx@126.com  |
+| 密 码  | TOKEN        |
 
-**获取TOKEN**
+**获取 TOKEN**
 
-[网易邮箱（126/163）：授权码获取攻略_网易邮箱授权码-CSDN博客](https://blog.csdn.net/kissradish/article/details/108447972)
+[网易邮箱（126/163）：授权码获取攻略\_网易邮箱授权码-CSDN 博客](https://blog.csdn.net/kissradish/article/details/108447972)
+
 #### 4.3 调用脚本
 
-qBittorrent设置种子下载完成时运行外部程序：`/path/hlink.py "%F" "%L"` 
+qBittorrent 设置种子下载完成时运行外部程序：`/path/hlink.py "%F" "%L"`
 
 hlink.py:为文件建立硬链接，根据分类放入音乐库目录、番剧库目录、电影库目录......，主要函数如下：
+
 ##### 日志记录
 
 ```python
@@ -242,6 +246,7 @@ def setup_logger(name: str, log_file=VIDEOS_LOG, level='INFO'):
 ```
 
 ##### 视频处理
+
 ```python
 import re
 # 正则表达式
@@ -258,7 +263,7 @@ REGEX_COMMON = re.compile(r'^(\[.+?\]\s*)\[?(.+?)\]?\s*\[(\d\d.*?)\](.*)$')
 def file_size(filePath) -> int:
     # 返回文件大小(MB)
     return os.path.getsize(filePath) // (1024 * 1024)
-    
+   
 def GMTeam(name) -> str:
     # [GM-Team字幕组],对目录或文件名进行处理
     rslt = REGEX_GMTEAM.match(name)
@@ -340,7 +345,8 @@ def link_file(src, dst):
 
 ##### 音乐处理
 
-对rar文件进行解压
+对 rar 文件进行解压
+
 ```python
 import rarfile
 def unrar_file(src: str, dst: str):
@@ -354,6 +360,7 @@ def unrar_file(src: str, dst: str):
 ```
 
 音乐类型直接复制到音乐库，调用音乐库格式化脚本
+
 ```python
 def music_type(src: str):
     dst = src.replace(os.path.join(SRCPATH, 'Music'), MUSICPATH)
@@ -372,9 +379,10 @@ def music_type(src: str):
     os.system(f'python {py_path}')
     return
 ```
+
 ## 5. 手动更新
 
 1. 下载最新版：[Releases · c0re100/qBittorrent-Enhanced-Edition](https://github.com/c0re100/qBittorrent-Enhanced-Edition/releases)，选择`qbittorrent-enhanced-nox_x86_64-linux-musl_static.zip`
-2. 解压出qbittorrent-nox文件
-3. 替换原qbittorrent-nox文件（可用which 命令查找）
-4. 重启qbittorrent
+2. 解压出 qbittorrent-nox 文件
+3. 替换原 qbittorrent-nox 文件（可用 which 命令查找）
+4. 重启 qbittorrent
