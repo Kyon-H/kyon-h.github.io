@@ -1,3 +1,3 @@
 # Kyon-H Blog
 
-### <https://kyon-h.github.io>
+### <https://blog.kyon.xin>
