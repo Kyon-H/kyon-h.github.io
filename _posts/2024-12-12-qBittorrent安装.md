@@ -11,7 +11,6 @@ tags:
   - Ubuntu
   - 软件安装
 ---
-
 ## 1. 下载安装
 
 <mark>配置文件：~/.config/qBittorrent/</mark>
@@ -90,22 +89,19 @@ qbittorrent 设置备用 webui 地址：`/home/user/Templates/vuetorrent/`
 
 #### 高级
 
-1. <img src="https://img.ghostliner.top/GFdTet.png" alt="image-20240820230738951.png" title="image-20240820230738951.png" style="zoom:50%" />
+1.
+<img src="https://img.ghostliner.top/GFdTet.png" alt="image-20240820230738951.png" title="image-20240820230738951.png" style="zoom:50%" />
 
 2.
-
 <img src="https://img.ghostliner.top/iNYa7t.png" alt="image-20240820230937953.png" title="image-20240820230937953.png" style="zoom:50%" />
 
 3.
-
 <img src="https://img.ghostliner.top/tvYzB5.png" alt="image-20240820231006390.png" title="image-20240820231006390.png" style="zoom:50%" />
 
 4.
-
 <img src="https://img.ghostliner.top/0gEBAj.png" alt="image-20240820231030176.png" title="image-20240820231030176.png" style="zoom:50%" />
 
 5.
-
 <img src="https://img.ghostliner.top/jgfnou.png" alt="image-20240820231044716.png" title="image-20240820231044716.png" style="zoom:50%" />
 
 ## 3. PeerBanHelper
