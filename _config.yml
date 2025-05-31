@@ -5,7 +5,7 @@ header-img: img/home-bg.jpg
 email:  
 description: "这里是 @Kyon-H 的个人博客"
 keyword: "Kyon-H, 博客, 个人网站"
-url: "https://kyon-h.github.io" # your host, for absolute URL
+url: "https://blog.kyon.xin" # your host, for absolute URL
 baseurl: ""
 # Publish posts or collection documents with a future date.
 future: true
@@ -62,9 +62,9 @@ netease_comment: false
 # Baidu Analytics
 # ba_track_id: [your track id]
 
-# Google Analytics
-# ga_track_id: "UA-49627206-1" # Format: UA-xxxxxx-xx
-# ga_domain: huangxuan.me
+Google Analytics
+ga_track_id: "G-R4L12HPPJF" # Format: UA-xxxxxx-xx
+ga_domain: blog.kyon.xin
 
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
