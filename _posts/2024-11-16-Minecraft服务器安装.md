@@ -10,6 +10,7 @@ tags:
   - MC
   - Minecraft
   - fabric
+published: true
 ---
 ## 1.安装fabric服务端
 

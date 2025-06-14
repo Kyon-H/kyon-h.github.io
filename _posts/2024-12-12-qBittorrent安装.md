@@ -10,6 +10,7 @@ tags:
   - PBH
   - Ubuntu
   - 软件安装
+published: true
 ---
 ## 1. 下载安装
 
