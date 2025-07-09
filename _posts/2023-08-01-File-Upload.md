@@ -35,6 +35,9 @@ system('ls');
 
 将the.php改为the.jpg
 
+![image.png](https://img.ghostliner.top/vt5Xwv.png)
+
+
 burpsuit抓取request，修改文件后缀
 ### HIGH
 
