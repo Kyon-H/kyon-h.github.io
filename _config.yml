@@ -37,6 +37,7 @@ anchorjs: true # if you want to customize anchor. check out line:181 of `post.ht
 # make sure you have this gem installed
 # `$ gem install jekyll-paginate`
 plugins: [jekyll-paginate]
+plugins: [jekyll-mermaid]
 
 # Markdown settings
 # replace redcarpet to kramdown,
