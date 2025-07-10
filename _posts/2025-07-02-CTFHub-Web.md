@@ -5,8 +5,10 @@ subtitle: CTFHub Web
 date: 2025-07-02 17:13
 author: Kyon-H
 header-img: img/post-bg-2015.jpg
-tags: 
-published: false
+tags:
+  - 靶场实战
+  - CTF-HUB
+published: true
 ---
 ## 一、信息泄露
 ### 目录遍历

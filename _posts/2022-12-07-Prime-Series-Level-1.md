@@ -8,6 +8,7 @@ header-img: img/post-bg-2015.jpg
 tags:
   - Vulnhub
   - 靶场实战
+published: true
 ---
 
 ## Prime_Series_Level-1
