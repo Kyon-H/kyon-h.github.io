@@ -2,7 +2,7 @@
 layout: post
 title: File Include
 subtitle: 文件包含漏洞
-date: 2025-07-09 16:44
+date: 2025-06-19 11:55
 author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags: 
@@ -51,7 +51,7 @@ POST数据：
 ```php
 data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b
 data://a/b,<?php phpinfo();?>
-data:,<?php phpinfo();?>
+https://7cdbe539-f220-4021-ac93-fd10996d0f13.challenge.ctf.show
 ```
 #### zlib://
 

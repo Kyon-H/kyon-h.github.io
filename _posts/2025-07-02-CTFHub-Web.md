@@ -8,7 +8,7 @@ header-img: img/post-bg-2015.jpg
 tags:
   - 靶场实战
   - CTF-HUB
-published: true
+published: false
 ---
 ## 一、信息泄露
 ### 目录遍历
@@ -22,6 +22,7 @@ published: true
 ### 备份文件下载
 
 #### 网站源码
+
 ![](https://cdn.nlark.com/yuque/0/2025/webp/57535506/1751463887409-d80dfd73-aec4-41f2-850b-c37754618d7e.webp)
 
 bp构造payload，获取到`www.zip`文件，解压
