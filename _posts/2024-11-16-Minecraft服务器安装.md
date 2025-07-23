@@ -6,10 +6,11 @@ date: 2024-11-16 00:11
 author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags:
-  - Linux
   - MC
   - Minecraft
   - fabric
+  - Ubuntu
+  - 服务器
 published: true
 ---
 ## 1.安装fabric服务端
