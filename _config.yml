@@ -1,6 +1,6 @@
 # Site settings
 title: Kyon-H Blog
-SEOTitle: Kyon-H的博客 | Kyon-H Blog
+SEOTitle: Kyon-H Blog
 header-img: img/home-bg.jpg
 email:
 description: "这里是 @Kyon-H 的个人博客"
@@ -11,7 +11,7 @@ baseurl: ""
 future: true
 
 # SNS settings
-RSS: false
+RSS: true
 github_username: Kyon-H
 
 # Build settings

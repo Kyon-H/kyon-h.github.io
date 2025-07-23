@@ -29,7 +29,7 @@ jobs:
           git clone https://${{ secrets.ACCESS_TOKEN }}@github.com/Kyon-H/blog-bak.git blog-bak
           mkdir -p _posts
           rm -rf _posts/*
-          find blog-bak -type f -name "*.md" -exec cp {} _posts/ \;
+          find blog-bak -type f -name "*.md" -exec mv {} _posts/ \;
           rm -rf blog-bak
 
       # 步骤3：提交并推送到仓库B
