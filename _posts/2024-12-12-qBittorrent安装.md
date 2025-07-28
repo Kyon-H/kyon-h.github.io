@@ -92,18 +92,23 @@ qbittorrent 设置备用 webui 地址：`/home/user/Templates/vuetorrent/`
 #### 高级
 
 1.
+
 <img src="https://img.ghostliner.top/GFdTet.png" alt="image-20240820230738951.png" title="image-20240820230738951.png" style="zoom:50%" />
 
 2.
+
 <img src="https://img.ghostliner.top/iNYa7t.png" alt="image-20240820230937953.png" title="image-20240820230937953.png" style="zoom:50%" />
 
 3.
+
 <img src="https://img.ghostliner.top/tvYzB5.png" alt="image-20240820231006390.png" title="image-20240820231006390.png" style="zoom:50%" />
 
 4.
+
 <img src="https://img.ghostliner.top/0gEBAj.png" alt="image-20240820231030176.png" title="image-20240820231030176.png" style="zoom:50%" />
 
 5.
+
 <img src="https://img.ghostliner.top/jgfnou.png" alt="image-20240820231044716.png" title="image-20240820231044716.png" style="zoom:50%" />
 
 ## 3. PeerBanHelper
@@ -138,7 +143,7 @@ PBH 默认端口：9898
 
 `cd /etc/systemd/system && vim peerbanhelper.service`
 
-```
+```ini
 [Unit]
 Description=Start PeerBanHelper jar file
 After=multi-user.target
@@ -159,7 +164,7 @@ WantedBy=multi-user.target
 
 **RSS 订阅：**
 
-```
+```url
 # 音乐
 http://www.kisssub.org/rss-3.xml
 # 爱恋动漫

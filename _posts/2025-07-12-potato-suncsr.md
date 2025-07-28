@@ -19,9 +19,10 @@ published: true
 
 ![image.png](https://img.ghostliner.top/SUmsGq.png)
 
-访问80端口，未发现有效信息，目录扫描发现 `/info.php` 
+访问80端口，未发现有效信息，目录扫描发现 `/info.php`
 
 `whatweb` 未发现信息
+
 ### SSH爆破
 
 ```shell
@@ -33,6 +34,7 @@ hydra -l potato -P 字典2/字典.txt -vV ssh://192.168.163.133:7120
 ```shell
 ssh -p 7120 potato@192.168.163.133
 ```
+
 ### 提权
 
 进入目标机后，尝试sudo, find 提权失败，查看系统信息

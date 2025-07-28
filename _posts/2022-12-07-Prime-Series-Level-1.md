@@ -37,7 +37,7 @@ nmap -A 192.168.30.134
 dirb http://192.168.30.134
 ```
 
-发现有 wordpress（博客网站通用框架），访问http://192.168.30.134/wordpress
+发现有 wordpress（博客网站通用框架），访问<http://192.168.30.134/wordpress>
 
 用户名：victor
 
@@ -169,7 +169,7 @@ msf6> exploit
 meterpreter>
 ```
 
-访问 http://192.168.0.108/wordpress/wp-content/themes/twentynineteen/secret.php（wordpress开源，通过分析源码获取路径）
+访问 <http://192.168.0.108/wordpress/wp-content/themes/twentynineteen/secret.php（wordpress开源，通过分析源码获取路径）>
 
 之后监听终端显示`meterpreter>`可输入命令。
 

@@ -50,7 +50,7 @@ dirb https://terratest.earth.local
 
 ### 3. 访问网址
 
-https://earth.local/ 有三行信息：
+<https://earth.local/> 有三行信息：
 
 ```
 37090b59030f11060b0a1b4e0000000000004312170a1b0b0e4107174f1a0b044e0a000202134e0a161d17040359061d43370f15030b10414e340e1c0a0f0b0b061d430e0059220f11124059261ae281ba124e14001c06411a110e00435542495f5e430a0715000306150b0b1c4e4b5242495f5e430c07150a1d4a410216010943e281b54e1c0101160606591b0143121a0b0a1a00094e1f1d010e412d180307050e1c17060f43150159210b144137161d054d41270d4f0710410010010b431507140a1d43001d5903010d064e18010a4307010c1d4e1708031c1c4e02124e1d0a0b13410f0a4f2b02131a11e281b61d43261c18010a43220f1716010d40
@@ -62,10 +62,10 @@ https://earth.local/ 有三行信息：
 
 **分析：**此为加密信息，明文为“message”框中输入信息，加密密钥为“message key”框中输入信息。
 
-https://earth.local/admin/ 页面点击“login”跳转到登陆界面
+<https://earth.local/admin/> 页面点击“login”跳转到登陆界面
 **分析：**页面设置 token 防爆破处理，使用 sqlmap 简单测试未发现 sql 注入。
 
-https://terratest.earth.local/robots.txt 页面：
+<https://terratest.earth.local/robots.txt> 页面：
 
 ![image-20221212164447680.png](https://img.ghostliner.top/ZZudtb.png)
 
@@ -93,7 +93,7 @@ testdata.txt
 username:terra
 ```
 
-访问 https://terratest.earth.local/testdata.txt
+访问 <https://terratest.earth.local/testdata.txt>
 
 ```
 According to radiometric dating estimation and other evidence, Earth formed over 4.5 billion years ago. Within the first billion years of Earth's history, life appeared in the oceans and began to affect Earth's atmosphere and surface, leading to the proliferation of anaerobic and, later, aerobic organisms. Some geological evidence indicates that life may have arisen as early as 4.1 billion years ago.
@@ -103,7 +103,7 @@ According to radiometric dating estimation and other evidence, Earth formed over
 
 ### 4. XOR 加密算法
 
-介绍：**简单异或密码**（英语：simple XOR cipher）是[密码学](https://zh.m.wikipedia.org/wiki/密码学)中一种简单的[加密算法](https://zh.m.wikipedia.org/wiki/加密算法)。文本序列的每个字符可以通过与给定的密钥进行按位异或运算来加密。如果要解密，只需要将加密后的结果与密钥再次进行按位异或运算即可。在这些密码的任何部分中，密钥运算符在[已知明文攻击](https://zh.m.wikipedia.org/wiki/已知明文攻击)下都是脆弱的，这是因为*明文* XOR _密文_ = _密钥_。
+介绍：**简单异或密码**（英语：simple XOR cipher）是[密码学](https://zh.m.wikipedia.org/wiki/密码学)中一种简单的[加密算法](https://zh.m.wikipedia.org/wiki/加密算法)。文本序列的每个字符可以通过与给定的密钥进行按位异或运算来加密。如果要解密，只需要将加密后的结果与密钥再次进行按位异或运算即可。在这些密码的任何部分中，密钥运算符在[已知明文攻击](https://zh.m.wikipedia.org/wiki/已知明文攻击)下都是脆弱的，这是因为*明文* XOR *密文* = *密钥*。
 
 python 实现获取密钥：
 
