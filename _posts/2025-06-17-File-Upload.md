@@ -6,7 +6,7 @@ date: 2025-06-17 16:22
 author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags: 
-published: false
+published: true
 ---
 ## 1. 文件上传漏洞介绍
 
