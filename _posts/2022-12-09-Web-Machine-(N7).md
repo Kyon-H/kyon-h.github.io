@@ -9,9 +9,9 @@ tags:
   - Vulnhub
   - 靶场实战
 published: true
+number headings: first-level 2, max 4, 1.1., auto
 ---
-
-## Web Machine (N7)
+## 1. Web Machine (N7)
 
 靶机 ip：192.168.56.101
 
@@ -19,7 +19,7 @@ kali 攻击机 ip：192.168.56.102
 
 注：关于 vmware 和 virtual box 虚拟机如何建立网络连接，详见：[不同虚拟化平台的虚拟机之间进行网络通信 - 简书](https://www.jianshu.com/p/632d91db9430)
 
-### 1. 使用 nmap 扫描 c 段
+### 1.1. 使用 nmap 扫描 c 段
 
 ```shell
 nmap -sS 192.168.56.0/24
@@ -28,7 +28,7 @@ nmap -sV -sC -A 192.168.56.101
 # 发现只有80端口开放
 ```
 
-### 2. 扫描目录
+### 1.2. 扫描目录
 
 ```shell
 dirb http://192.168.56.101
@@ -52,7 +52,7 @@ ffuf -u "http://192.168.56.101/FUZZ" -w /usr/share/dirbuster/wordlists/directory
 
 通过扫描得到`enter_network/index.php` 和 `enter_network/admin.php` 。第一个为登陆界面，第二个需要 admin 权限。接下来可以对登陆界面使用 sqlmap 检测是否有注入漏洞，或是 bp 抓包分析。
 
-### 3. 使用 sqlmap 进行 sql 注入
+### 1.3. 使用 sqlmap 进行 sql 注入
 
 ```shell
 sqlmap -u "http://192.168.56.101/enter_network/" --forms --dbs --current-db
@@ -82,7 +82,7 @@ sqlmap -u "http://192.168.56.101/enter_network/" --forms --batch -D "Machine" -T
 
 ![image-20221209174731002.png](https://img.ghostliner.top/5AH2sR.png)
 
-### 4. bp 抓包分析
+### 1.4. bp 抓包分析
 
 ![image-20221209205529082.png](https://img.ghostliner.top/nKhqbY.png)
 

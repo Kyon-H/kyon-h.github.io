@@ -7,9 +7,11 @@ author: Kyon-H
 header-img: img/post-bg-2015.jpg
 tags:
   - 靶场实战
+  - Vulnhub
+number headings: first-level 2, max 4, 1.1., auto
 published: true
 ---
-### 信息搜集
+## 1. 信息搜集
 
 扫描发现主机 `192.168.163.133`
 
@@ -23,7 +25,7 @@ published: true
 
 `whatweb` 未发现信息
 
-### SSH爆破
+## 2. SSH爆破
 
 ```shell
 hydra -l potato -P 字典2/字典.txt -vV ssh://192.168.163.133:7120
@@ -35,7 +37,7 @@ hydra -l potato -P 字典2/字典.txt -vV ssh://192.168.163.133:7120
 ssh -p 7120 potato@192.168.163.133
 ```
 
-### 提权
+## 3. 提权
 
 进入目标机后，尝试sudo, find 提权失败，查看系统信息
 

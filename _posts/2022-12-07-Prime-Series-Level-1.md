@@ -9,10 +9,11 @@ tags:
   - Vulnhub
   - 靶场实战
 published: true
+number headings: first-level 2, max 4, 1.1., auto
 ---
-## Prime_Series_Level-1
+## 1. Prime_Series_Level-1
 
-#### IP 扫描
+### 1.1. IP 扫描
 
 使用 nmap
 
@@ -30,7 +31,7 @@ nmap -A 192.168.30.134
 
 开放端口 80 和 22
 
-#### 目录扫描
+### 1.2. 目录扫描
 
 ```shell
 dirb http://192.168.30.134
@@ -130,7 +131,7 @@ wpscan --url http://192.168.30.134/wordpress --enumerate u
 
 [Log In ‹ Focus — WordPress](http://192.168.30.134/wordpress/wp-login.php)登录 victor,follow_the_ippsec。进入后台。
 
-#### 反弹 shell
+### 1.3. 反弹 shell
 
 查找漏洞，上传文件。
 
@@ -172,7 +173,7 @@ meterpreter>
 
 之后监听终端显示`meterpreter>`可输入命令。
 
-#### 提权
+### 1.4. 提权
 
 监听端口
 

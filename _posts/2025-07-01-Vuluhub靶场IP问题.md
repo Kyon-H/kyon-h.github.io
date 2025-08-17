@@ -8,6 +8,7 @@ header-img: img/post-bg-2015.jpg
 tags:
   - Vulnhub
 published: true
+number headings: off
 ---
 VMware导入ovf文件时提示导入失败，点击重试
 

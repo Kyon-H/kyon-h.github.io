@@ -13,7 +13,7 @@ tags:
   - 服务器
 published: true
 ---
-## 1.安装fabric服务端
+## 1. 安装fabric服务端
 
 <mark>依赖项：Java、curl</mark>
 
@@ -54,7 +54,7 @@ eula=true
 
 其他安装方法：[Installing a Fabric Server without a GUI](https://fabricmc.net/wiki/player:tutorials:install_server)
 
-## 2.安装screen
+## 2. 安装screen
 
 [Linux终端命令神器--Screen命令详解。助力Linux使用和管理-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/1844735)
 
@@ -89,7 +89,7 @@ cd fabric
 screen -R mc java -jar -Xms1G -Xmx2G server.jar nogui
 ```
 
-## 3.修改配置
+## 3. 修改配置
 
 [Minecraft 服务器server.properties属性文件介绍 (最详细 最全 汉化) - 哔哩哔哩](https://www.bilibili.com/opus/422753987430124575)
 
@@ -104,7 +104,7 @@ online-mode=false
 white-list=true
 ```
 
-## 4.导入存档
+## 4. 导入存档
 
 Windows下`...\.minecraft\saves\`文件夹下的存档文件夹打包传到服务器，解压到MC服务器文件夹，修改`server.properties`文件
 
@@ -112,7 +112,7 @@ Windows下`...\.minecraft\saves\`文件夹下的存档文件夹打包传到服�
 level-name=存档文件夹名
 ```
 
-## 5.MCSManager
+## 5. MCSManager
 
 使用`MCSManager`代替`screen`，方便启动游戏、管理文件、监视运行情况等
 
@@ -180,7 +180,7 @@ wss://IP地址
 
 之后填写启动命令`java -jar -Xms1G -Xmx3G server.jar nogui`和`server.jar`所在目录
 
-## 6.模组
+## 6. 模组
 
 [模组检索 - MC百科](https://www.mcmod.cn/modlist.html)可以下载和查看mod是否需要安装到服务端
 
@@ -195,7 +195,7 @@ create-fabric-0.5.1-f-build.1335+mc1.20.1.jar  jei-1.20.1-fabric-15.20.0.105.jar
 fabric-api-0.92.2+1.20.1.jar                   journeymap-1.20.1-5.10.3-fabric.jar
 ```
 
-## 7.光影
+## 7. 光影
 
 [Iris Shaders - MC百科](https://www.mcmod.cn/class/3697.html)
 
